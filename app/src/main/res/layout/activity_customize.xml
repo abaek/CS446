@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Main Activity"/>
+        android:text="Customize Activity"/>
 
     <Button
         android:id="@+id/next_activity"
@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Next"
-        android:onClick="nextActivity"/>
+        android:text="Back"
+        android:onClick="previousActivity"/>
 
 </LinearLayout>
