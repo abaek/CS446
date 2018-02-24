@@ -14,7 +14,7 @@ public class CustomizeActivity extends AppCompatActivity {
     }
 
     public void previousActivity(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, InputActivity.class);
         startActivity(intent);
     }
 }
