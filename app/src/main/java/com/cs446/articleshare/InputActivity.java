@@ -1,6 +1,5 @@
 package com.cs446.articleshare;
 
-import android.Manifest;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -8,13 +7,13 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cs446.articleshare.views.AspectRatioImageView;
 import com.squareup.picasso.Picasso;
@@ -26,9 +25,7 @@ import java.util.List;
 
 import static android.widget.ImageView.ScaleType.CENTER_CROP;
 
-public class InputActivity extends BaseActivity {
-
-    private static final int REQUEST_PERMISSIONS = 20;
+public class InputActivity extends AppCompatActivity {
 
     private GridView gv;
     private GridViewAdapter gvAdapter;
@@ -40,25 +37,12 @@ public class InputActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
         initializeViews();
-        requestPermission();
-    }
-
-    @Override
-    public void onPermissionsGranted(final int requestCode) {
-        Toast.makeText(this, "Permissions Received.", Toast.LENGTH_LONG).show();
     }
 
     private void initializeViews() {
         selectScreenshot = (TextView) findViewById(R.id.select_screenshot);
         noScreenshot = (TextView) findViewById(R.id.no_screenshot);
         gv = (GridView) findViewById(R.id.image_grid);
-    }
-
-    private void requestPermission() {
-        this.requestAppPermissions(new
-                        String[]{Manifest.permission.READ_CONTACTS,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE}, R.string.app_name
-                , REQUEST_PERMISSIONS);
     }
 
     @Override
@@ -88,7 +72,8 @@ public class InputActivity extends BaseActivity {
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 columns,
                 MediaStore.Images.Media.DATA + " like ? ",
-                new String[]{"%/Screenshots/%"},
+//                new String[]{"%/Screenshots/%"},
+                new String[]{"%"},
                 MediaStore.Images.Media.DATE_ADDED + " DESC"
         );
         if (cursor == null) {
@@ -128,7 +113,7 @@ public class InputActivity extends BaseActivity {
 
             Picasso.with(context)
                     .load(source)
-                    .placeholder(R.color.material_grey_300)
+                    .placeholder(R.color.material_deep_teal_200)
                     .error(R.color.material_blue_grey_800)
                     .fit()
                     .centerCrop()
@@ -174,10 +159,7 @@ public class InputActivity extends BaseActivity {
                 return;
             }
 
-            pushToCropPage(source);
-        }
-
-        private void pushToCropPage(Uri source) {
+            // TODO: Go to next activity
         }
 
         @Override
