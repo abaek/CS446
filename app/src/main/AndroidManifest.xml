@@ -19,12 +19,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CustomizeActivity"
+            android:name=".CropActivity"
             android:screenOrientation="portrait">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".InputActivity"/>
+        </activity>
+        <activity
+            android:name=".CustomizeActivity"
+            android:screenOrientation="portrait">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".CropActivity"/>
         </activity>
     </application>
 </manifest>

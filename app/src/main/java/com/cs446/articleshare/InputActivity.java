@@ -72,7 +72,8 @@ public class InputActivity extends AppCompatActivity {
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 columns,
                 MediaStore.Images.Media.DATA + " like ? ",
-//                new String[]{"%/Screenshots/%"},
+                // TODO: Use this for the screenshots only
+                // new String[]{"%/Screenshots/%"},
                 new String[]{"%"},
                 MediaStore.Images.Media.DATE_ADDED + " DESC"
         );
@@ -177,6 +178,4 @@ public class InputActivity extends AppCompatActivity {
             return position;
         }
     }
-
-
 }
