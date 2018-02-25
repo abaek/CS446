@@ -1,6 +1,7 @@
 package com.cs446.articleshare;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -26,6 +27,8 @@ import java.util.List;
 import static android.widget.ImageView.ScaleType.CENTER_CROP;
 
 public class InputActivity extends AppCompatActivity {
+
+    public static final String IMAGE = "com.cs446.articleshare.image";
 
     private GridView gv;
     private GridViewAdapter gvAdapter;
@@ -160,7 +163,14 @@ public class InputActivity extends AppCompatActivity {
                 return;
             }
 
-            // TODO: Go to next activity
+            pushToShareActivity();
+        }
+
+        private void pushToShareActivity() {
+            Intent intent = new Intent(context, ShareActivity.class);
+            // TODO: Push to CropActivity instead and add image uri
+            // intent.putExtra(IMAGE, source.toString());
+            startActivity(intent);
         }
 
         @Override
