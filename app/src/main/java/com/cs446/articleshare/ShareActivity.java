@@ -76,8 +76,7 @@ public class ShareActivity extends BaseActivity {
 
         initLogoutButton();
 
-        // TODO: Get Url from CustomizeActivity
-        selectedUrl = "https://medium.com/@monteiro/designs-lost-generation-ac7289549017";
+        selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
         initLinkPreviewView(selectedUrl);
 
         tweetText = selectedUrl;

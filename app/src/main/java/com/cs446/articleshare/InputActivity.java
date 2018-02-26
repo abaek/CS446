@@ -1,9 +1,11 @@
 package com.cs446.articleshare;
 
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,8 +15,10 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cs446.articleshare.views.AspectRatioImageView;
 import com.squareup.picasso.Picasso;
@@ -25,6 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.widget.ImageView.ScaleType.CENTER_CROP;
+import static com.cs446.articleshare.Util.EXCERPT;
+import static com.cs446.articleshare.Util.clipboardEmpty;
+import static com.cs446.articleshare.Util.getTextFromClipboard;
 
 public class InputActivity extends AppCompatActivity {
 
@@ -34,17 +41,23 @@ public class InputActivity extends AppCompatActivity {
     private GridViewAdapter gvAdapter;
     private TextView selectScreenshot;
     private TextView noScreenshot;
+    private Button pasteButton;
+
+    private ClipboardManager clipboard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
         initializeViews();
+
+        clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
     }
 
     private void initializeViews() {
         selectScreenshot = (TextView) findViewById(R.id.select_screenshot);
         noScreenshot = (TextView) findViewById(R.id.no_screenshot);
+        pasteButton = (Button) findViewById(R.id.paste_button);
         gv = (GridView) findViewById(R.id.image_grid);
     }
 
@@ -52,6 +65,65 @@ public class InputActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateScreenshotGallery();
+
+        if(clipboardEmpty(clipboard)) {
+            disablePasteButton();
+        } else {
+            enablePasteButton();
+        }
+    }
+
+    private void enablePasteButton() {
+        pasteButton.setEnabled(true);
+        pasteButton.setText(getString(R.string.paste_instructions));
+        pasteButton.setTextColor(Color.WHITE);
+    }
+
+    private void disablePasteButton() {
+        pasteButton.setEnabled(false);
+        pasteButton.setText(getString(R.string.clipboard_empty));
+        pasteButton.setTextColor(getResources().getColor(R.color.white_trans_65));
+    }
+
+    public void pasteClipboard(View view) {
+        String pasteData = getTextFromClipboard(this, clipboard);
+
+        String excerpt = "";
+        if(pasteData != null){
+            excerpt = pasteData.trim();
+        }else{
+            return;
+        }
+
+        if(excerpt.length() <= 0){
+            showEmptyClipboardError();
+            return;
+        }
+
+        if (App.getInstance().isNetworkAvailable()) {
+            pushToCustomizePage(excerpt);
+        } else {
+            showNoNetworkError();
+        }
+    }
+
+    private void showEmptyClipboardError() {
+        Toast.makeText(getApplicationContext(),
+                getString(R.string.empty_clipboard_toast),
+                Toast.LENGTH_SHORT)
+                .show();
+    }
+
+    private void showNoNetworkError() {
+        CharSequence text = getString(R.string.no_internet_error);
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void pushToCustomizePage(String excerpt) {
+        Intent intent = new Intent(this, CustomizeActivity.class);
+        intent.setAction(Intent.ACTION_DEFAULT);
+        intent.putExtra(EXCERPT, excerpt);
+        startActivity(intent);
     }
 
     private void updateScreenshotGallery() {

@@ -1,8 +1,10 @@
 package com.cs446.articleshare;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 
 import com.twitter.sdk.android.Twitter;
@@ -56,5 +58,11 @@ public class App extends Application {
         );
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    public boolean isNetworkAvailable() {
+        return ((ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE))
+                .getActiveNetworkInfo() != null;
     }
 }

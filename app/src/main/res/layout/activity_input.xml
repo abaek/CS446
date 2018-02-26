@@ -9,6 +9,18 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
+    <Button
+        android:id="@+id/paste_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/abc_ic_menu_paste_mtrl_am_alpha"
+        android:drawableLeft="@drawable/abc_ic_menu_paste_mtrl_am_alpha"
+        android:text="@string/paste_instructions"
+        android:onClick="pasteClipboard"
+        android:background="@drawable/paste_button"
+        android:textSize="24sp"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"/>
 
     <TextView
         android:id="@+id/select_screenshot"
