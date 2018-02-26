@@ -2,7 +2,12 @@
 <resources>
     <string name="addComment">Add a comment</string>
     <string name="app_name">ArticleShare</string>
+    <string name="error_file_not_saved">Error: File could not be saved.</string>
+    <string name="image_saved">Saved to gallery!</string>
+    <string name="logout"><u>Logout</u></string>
     <string name="no_screenshots">You have no screenshots.</string>
+    <string name="posted_to_twitter">Posted to Twitter!</string>
     <string name="select_image_instructions">Select a screenshot</string>
     <string name="tweet">Tweet</string>
+    <string name="view_on_twitter">View on Twitter</string>
 </resources>
