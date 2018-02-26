@@ -163,13 +163,13 @@ public class InputActivity extends AppCompatActivity {
                 return;
             }
 
-            pushToShareActivity();
+            pushToShareActivity(source);
         }
 
-        private void pushToShareActivity() {
+        private void pushToShareActivity(Uri source) {
             Intent intent = new Intent(context, ShareActivity.class);
-            // TODO: Push to CropActivity instead and add image uri
-            // intent.putExtra(IMAGE, source.toString());
+            // TODO: Push to CropActivity instead
+            intent.putExtra(IMAGE, source.toString());
             startActivity(intent);
         }
 
