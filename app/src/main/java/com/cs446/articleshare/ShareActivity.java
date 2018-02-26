@@ -1,17 +1,12 @@
 package com.cs446.articleshare;
 
 import android.app.ProgressDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -36,10 +31,8 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterFactory;
@@ -63,7 +56,6 @@ public class ShareActivity extends BaseActivity {
     private String fileName;
     private String tweetText;
     private String selectedUrl;
-    private Uri shareImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +83,7 @@ public class ShareActivity extends BaseActivity {
         tweetText = selectedUrl;
 
         final Validator twitterValidator = new Validator();
-        int charLimit = Validator.MAX_TWEET_LENGTH - (2 * (twitterValidator.getShortUrlLengthHttps() + 1));
+        int charLimit = (Validator.MAX_TWEET_LENGTH * 2) - (2 * (twitterValidator.getShortUrlLengthHttps() + 1));
         initCharacterCountView(charLimit);
 
         initTweetEditor(twitterValidator);
@@ -108,8 +100,6 @@ public class ShareActivity extends BaseActivity {
         if (twitterSession != null) {
             showLoggedInState(twitterSession);
         }
-
-        shareImageUri = null;
     }
 
     private boolean saveImage() {
@@ -272,122 +262,10 @@ public class ShareActivity extends BaseActivity {
         loginButton.onActivityResult(requestCode, resultCode, data);
     }
 
-    /* Checks if external storage is available for read and write */
-    public boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
-    }
-
-    public void saveImage(View view) {
-        if (isExternalStorageWritable()) {
-            String root =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-            File dir = new File(root + File.separator + "Xcerpt");
-            dir.mkdirs();
-            File file = new File(dir, fileName);
-            Log.i("ShareActivity", "" + file);
-            if (file.exists())
-                file.delete();
-            try {
-                FileOutputStream out = new FileOutputStream(file);
-                img.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                out.flush();
-                out.close();
-                Toast.makeText(ShareActivity.this, getString(R.string.image_saved), Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                Toast.makeText(ShareActivity.this,
-                        getString(R.string.error_file_not_saved),
-                        Toast.LENGTH_LONG
-                ).show();
-                e.printStackTrace();
-                return;
-            }
-
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.TITLE, fileName);
-            values.put(MediaStore.Images.Media.DESCRIPTION, selectedUrl);
-            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
-            values.put(MediaStore.Images.ImageColumns.BUCKET_ID, file.toString().toLowerCase(Locale.US).hashCode());
-            values.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, file.getName().toLowerCase(Locale.US));
-            values.put("_data", file.getAbsolutePath());
-
-            ContentResolver cr = getContentResolver();
-            if (cr == null) {
-                Toast.makeText(ShareActivity.this,
-                        getString(R.string.error_file_not_saved),
-                        Toast.LENGTH_LONG
-                ).show();
-                return;
-            }
-            cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-
-        } else {
-            Toast.makeText(ShareActivity.this,
-                    "Error: External storage is not writable.",
-                    Toast.LENGTH_LONG
-            ).show();
-        }
-    }
-
     public void postTweet(View view) {
         File imageFile = getFileStreamPath(fileName);
         UpdateTwitterStatusTask postTweet = new UpdateTwitterStatusTask(tweetText, imageFile);
         postTweet.execute();
-    }
-
-    public void shareImage(View view) {
-
-        Intent share = new Intent(Intent.ACTION_SEND);
-        share.setType("image/jpeg");
-        share.putExtra(Intent.EXTRA_TEXT, selectedUrl);
-        if (shareImageUri == null) {
-            try {
-                cacheImage(true);
-                share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
-                startActivity(Intent.createChooser(share, "Share Image"));
-            } catch (IOException e) {
-                Toast.makeText(ShareActivity.this,
-                        "Error: File could not be saved.",
-                        Toast.LENGTH_LONG
-                ).show();
-                e.printStackTrace();
-            }
-        } else {
-            share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
-            startActivity(Intent.createChooser(share, "Share Image"));
-        }
-    }
-
-    private void cacheImage(boolean copyUrl) throws IOException {
-        if (isExternalStorageWritable()) {
-            String root =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-            File dir = new File(root + File.separator + "Xcerpt" + File.separator + "tmp");
-            dir.mkdirs();
-            File file = new File(dir, fileName);
-            if (file.exists()) {
-                file.delete();
-            }
-            if (copyUrl) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Xcerpt URL", selectedUrl);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(ShareActivity.this,
-                        "Source URL copied to clipboard.",
-                        Toast.LENGTH_SHORT
-                ).show();
-            }
-            FileOutputStream out = new FileOutputStream(file);
-            img.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-            shareImageUri = Uri.fromFile(file);
-        } else {
-            Toast.makeText(ShareActivity.this,
-                    "Error: Cannot write to external storage.",
-                    Toast.LENGTH_LONG
-            ).show();
-        }
     }
 
     class UpdateTwitterStatusTask extends AsyncTask<String, String, Void> {

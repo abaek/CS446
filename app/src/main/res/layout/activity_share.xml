@@ -110,21 +110,6 @@
             android:paddingRight="10dp"
             android:paddingTop="5dp">
 
-            <ImageButton
-                android:id="@+id/save_button"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="saveImage"/>
-
-            <ImageButton
-                android:id="@+id/share_button"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:onClick="shareImage"/>
-
             <View
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -136,6 +121,7 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/tweet_button"
                 android:onClick="postTweet"
                 android:text="@string/tweet"
                 android:textColor="@color/tw__solid_white"/>
