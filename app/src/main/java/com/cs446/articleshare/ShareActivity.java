@@ -3,11 +3,10 @@ package com.cs446.articleshare;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -76,8 +75,8 @@ public class ShareActivity extends BaseActivity {
 
         initLogoutButton();
 
-        selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
-        initLinkPreviewView(selectedUrl);
+//        selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
+//        initLinkPreviewView(selectedUrl);
 
         tweetText = selectedUrl;
 
@@ -110,18 +109,15 @@ public class ShareActivity extends BaseActivity {
     }
 
     private void initPreviewImage() {
-        // TODO: Get this image from CustomizeActivity
-        Uri uri = Uri.parse(getIntent().getExtras().getString(InputActivity.IMAGE));
-        try {
-            img = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-            if (img == null) {
-                return;
-            }
-            ImageView finalImage = (ImageView) findViewById(R.id.final_image);
-            finalImage.setImageBitmap(img);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        img = getImagePreview();
+        ImageView finalImage = (ImageView) findViewById(R.id.final_image);
+        finalImage.setImageBitmap(img);
+    }
+
+    private Bitmap getImagePreview() {
+        Bundle extras = getIntent().getExtras();
+        byte[] byteArray = extras.getByteArray(CustomizeActivity.IMAGE);
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 
     private void initTweetEditor(final Validator twitterValidator) {

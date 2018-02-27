@@ -1,16 +1,12 @@
 package com.cs446.articleshare;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Display;
@@ -82,13 +78,11 @@ public class CustomizeActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.done) {
-            share();
-            return true;
-        }
-        if(id == R.id.home){
-            onBackPressed();
+        switch (item.getItemId()) {
+            case R.id.done:
+                share();
+            case android.R.id.home:
+                onBackPressed();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -102,7 +96,7 @@ public class CustomizeActivity extends AppCompatActivity {
         v.setMaxHeight((int) (MAX_SCROLL_VIEW_HEIGHT * height));
     }
 
-    public void setColour(int colour){
+    public void setColour(int colour) {
         backgroundView.setBackgroundColor(colour);
 
         // set highlight colour to a lighter version of colour
@@ -147,7 +141,7 @@ public class CustomizeActivity extends AppCompatActivity {
 
         final GestureDetector gestureDetector = new GestureDetector(
                 this,
-                new GestureDetector.SimpleOnGestureListener(){
+                new GestureDetector.SimpleOnGestureListener() {
                     @Override
                     public boolean onSingleTapConfirmed(MotionEvent e) {
                         v.clearFocus();
@@ -167,7 +161,7 @@ public class CustomizeActivity extends AppCompatActivity {
 
         boolean fromXcerpt = intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT);
 
-        if(fromXcerpt){
+        if (fromXcerpt) {
             return intent.getStringExtra(EXCERPT);
         }
 
@@ -176,7 +170,7 @@ public class CustomizeActivity extends AppCompatActivity {
         return null;
     }
 
-    private void share(){
+    private void share() {
         Intent intent = new Intent(this, ShareActivity.class);
         intent.putExtra(URL, "https://twitter.com/"); // TODO dummy URL
 
