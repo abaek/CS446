@@ -83,14 +83,25 @@ public class CustomizeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        Log.e("CustomizeActivity", "Why doesn't this work? " + id);
+
         if (id == R.id.done) {
+            Log.e("CustomizeActivity", "Done " + id);
             share();
             return true;
         }
         if(id == R.id.home){
+            Log.e("CustomizeActivity", "Home " + id);
             onBackPressed();
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
     }
 
     private void initializeScrollView(MaxHeightScrollView v) {
@@ -165,9 +176,9 @@ public class CustomizeActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String intentAction = intent.getAction();
 
-        boolean fromXcerpt = intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT);
+        boolean fromInternal = intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT);
 
-        if(fromXcerpt){
+        if(fromInternal){
             return intent.getStringExtra(EXCERPT);
         }
 

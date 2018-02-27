@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 
 class Util {
-    static final String EXCERPT = "com.transcendentlabs.xcerpt.excerpt";
+    static final String EXCERPT = "com.cs446.articleshare.excerpt";
 
     // Clipboard util
 
