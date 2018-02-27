@@ -66,7 +66,7 @@ public class InputActivity extends AppCompatActivity {
         super.onResume();
         updateScreenshotGallery();
 
-        if(clipboardEmpty(clipboard)) {
+        if (clipboardEmpty(clipboard)) {
             disablePasteButton();
         } else {
             enablePasteButton();
@@ -89,13 +89,13 @@ public class InputActivity extends AppCompatActivity {
         String pasteData = getTextFromClipboard(this, clipboard);
 
         String excerpt = "";
-        if(pasteData != null){
+        if (pasteData != null) {
             excerpt = pasteData.trim();
-        }else{
+        } else {
             return;
         }
 
-        if(excerpt.length() <= 0){
+        if (excerpt.length() <= 0) {
             showEmptyClipboardError();
             return;
         }
@@ -235,7 +235,7 @@ public class InputActivity extends AppCompatActivity {
                 return;
             }
 
-            pushToShareActivity(source);
+            pushToCustomizePage("After a record 29 medals – 11 gold, eight silver and 10 bronze – in Pyeongchang, the Canadian team at the next Games in Beijing has a high bar to clear.");
         }
 
         private void pushToShareActivity(Uri source) {
