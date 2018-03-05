@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.SparseArray;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs446.articleshare.views.AspectRatioImageView;
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.gms.vision.text.TextRecognizer;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +35,7 @@ import java.util.List;
 
 import static android.widget.ImageView.ScaleType.CENTER_CROP;
 import static com.cs446.articleshare.Util.EXCERPT;
+import static com.cs446.articleshare.Util.IMAGEURI;
 import static com.cs446.articleshare.Util.clipboardEmpty;
 import static com.cs446.articleshare.Util.getTextFromClipboard;
 
@@ -224,18 +230,12 @@ public class InputActivity extends AppCompatActivity {
                 return;
             }
 
-            try {
-                Bitmap img = MediaStore.Images.Media.getBitmap(InputActivity.this.getContentResolver(), source);
-                if (img == null) {
-                    // TODO show error
-                    return;
-                }
-            } catch (IOException e) {
+            if (source == null) {
                 // TODO show error
                 return;
             }
 
-            pushToCustomizePage("After a record 29 medals – 11 gold, eight silver and 10 bronze – in Pyeongchang, the Canadian team at the next Games in Beijing has a high bar to clear.");
+            startCropper(source);
         }
 
         private void pushToShareActivity(Uri source) {
@@ -258,6 +258,43 @@ public class InputActivity extends AppCompatActivity {
         @Override
         public long getItemId(int position) {
             return position;
+        }
+
+    }
+
+    private void startCropper(Uri imageUri) {
+        CropImage.activity(imageUri).start(this);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
+                    TextRecognizer textRecognizer = new TextRecognizer.Builder(this).build();
+                    Frame imageFrame = new Frame.Builder()
+                            .setBitmap(bitmap)
+                            .build();
+
+                    SparseArray<TextBlock> textBlocks = textRecognizer.detect(imageFrame);
+
+                    String recognizedText = "";
+                    for (int i = 0; i < textBlocks.size(); i++) {
+                        TextBlock textBlock = textBlocks.get(textBlocks.keyAt(i));
+                        String text = textBlock.getValue();
+                        recognizedText += text;
+                    }
+                    pushToCustomizePage(recognizedText);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
         }
     }
 }

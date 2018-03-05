@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 class Util {
     static final String EXCERPT = "com.cs446.articleshare.excerpt";
+    static final String IMAGEURI = "com.cs446.articleshare.imageurl";
 
     // Clipboard util
 
