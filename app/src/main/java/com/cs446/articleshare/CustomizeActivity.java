@@ -6,6 +6,11 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
@@ -18,7 +23,9 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.cs446.articleshare.fragments.ColourPickerFragment;
 import com.cs446.articleshare.views.MaxHeightScrollView;
+import com.hold1.pagertabsindicator.PagerTabsIndicator;
 
 import java.io.ByteArrayOutputStream;
 
@@ -39,6 +46,8 @@ public class CustomizeActivity extends AppCompatActivity {
 
     private TextView contentPreview;
     private MaxHeightScrollView scrollView;
+    private PagerTabsIndicator tabs;
+    private PagerAdapter mPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +68,38 @@ public class CustomizeActivity extends AppCompatActivity {
         contentPreview = (TextView) findViewById(R.id.content_preview);
         formatSerifText(contentPreview);
         initializeHighlightBehaviour(contentPreview);
+        contentPreview.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            public boolean onCreateActionMode(final ActionMode mode, Menu menu) {
+                menu.clear();
+                mode.getMenuInflater().inflate(R.menu.highlight, menu);
+                return true;
+            }
+
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+                switch (item.getItemId()) {
+
+                    case R.id.done:
+                        share();
+                        return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+
+            }
+        });
 
         setColour(Color.parseColor(DEFAULT_COLOUR));
+
+        initPager();
     }
 
     @Override
@@ -91,6 +130,15 @@ public class CustomizeActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+    }
+
+    private void initPager() {
+        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
+        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+
+        tabs = (PagerTabsIndicator) findViewById(R.id.tabs);
+        tabs.setViewPager(mPager);
     }
 
     private void initializeScrollView(MaxHeightScrollView v) {
@@ -191,5 +239,50 @@ public class CustomizeActivity extends AppCompatActivity {
 
         intent.putExtra(IMAGE, byteArray);
         startActivity(intent);
+    }
+
+    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
+        // TODO don't hardcode positions
+
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        public CharSequence getPageTitle(int position) {
+            switch(position) {
+                case 0:
+                    return getString(ColourPickerFragment.title());
+                case 1:
+                    // TODO change to source picker
+                    return getString(ColourPickerFragment.title());
+                default:
+                    return "Error";
+            }
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // TODO
+            switch(position) {
+                case 0:
+                    return ColourPickerFragment.newInstance();
+                case 1:
+                    // TODO change to source picker
+                    return ColourPickerFragment.newInstance();
+                default:
+                    // TODO throw error?
+                    return null;
+            }
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
     }
 }

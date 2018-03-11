@@ -17,4 +17,6 @@
     <string name="no_internet_error">Error: Check your internet connection.</string>
     <string name="done">Done</string>
     <string name="loading">Loading…</string>
+    <string name="tab_colour">Colour</string>
+    <string name="tab_source">Source</string>
 </resources>
