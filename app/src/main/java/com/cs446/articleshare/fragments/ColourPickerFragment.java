@@ -23,11 +23,11 @@ public class ColourPickerFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public interface OnColourUpdate {
+    public interface ColourReceiver {
         public void onColourUpdate(int colour);
     }
 
-    OnColourUpdate colourUpdater;
+    ColourReceiver colourReceiver;
 
     public static int title() {
         return R.string.tab_colour;
@@ -51,7 +51,7 @@ public class ColourPickerFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        colourUpdater = (OnColourUpdate) context;
+        colourReceiver = (ColourReceiver) context;
     }
 
     @Override
@@ -114,7 +114,7 @@ public class ColourPickerFragment extends Fragment {
         colorPicker2.setOnColorChangedListener(new OnColorChangedListener() {
             @Override
             public void onColorChanged(int i) {
-                colourUpdater.onColourUpdate(i);
+                colourReceiver.onColourUpdate(i);
             }
         });
 

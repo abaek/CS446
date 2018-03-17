@@ -32,7 +32,7 @@ import java.io.ByteArrayOutputStream;
 import static com.cs446.articleshare.Util.EXCERPT;
 import static com.cs446.articleshare.Util.getBitmapFromView;
 
-public class CustomizeActivity extends AppCompatActivity implements ColourPickerFragment.OnColourUpdate {
+public class CustomizeActivity extends AppCompatActivity implements ColourPickerFragment.ColourReceiver {
     public static final String IMAGE = "IMAGE";
     public static final String URL = "URL";
 
