@@ -1,6 +1,7 @@
 package com.cs446.articleshare.fragments;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -22,6 +23,12 @@ public class ColourPickerFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    public interface OnColourUpdate {
+        public void onColourUpdate(int colour);
+    }
+
+    OnColourUpdate colourUpdater;
+
     public static int title() {
         return R.string.tab_colour;
     }
@@ -39,6 +46,12 @@ public class ColourPickerFragment extends Fragment {
         */
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        colourUpdater = (OnColourUpdate) context;
     }
 
     @Override
@@ -101,7 +114,7 @@ public class ColourPickerFragment extends Fragment {
         colorPicker2.setOnColorChangedListener(new OnColorChangedListener() {
             @Override
             public void onColorChanged(int i) {
-                // TODO send colour to activity
+                colourUpdater.onColourUpdate(i);
             }
         });
 

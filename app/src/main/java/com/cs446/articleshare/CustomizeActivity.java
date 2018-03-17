@@ -32,7 +32,7 @@ import java.io.ByteArrayOutputStream;
 import static com.cs446.articleshare.Util.EXCERPT;
 import static com.cs446.articleshare.Util.getBitmapFromView;
 
-public class CustomizeActivity extends AppCompatActivity {
+public class CustomizeActivity extends AppCompatActivity implements ColourPickerFragment.OnColourUpdate {
     public static final String IMAGE = "IMAGE";
     public static final String URL = "URL";
 
@@ -239,6 +239,11 @@ public class CustomizeActivity extends AppCompatActivity {
 
         intent.putExtra(IMAGE, byteArray);
         startActivity(intent);
+    }
+
+    @Override
+    public void onColourUpdate(int colour) {
+        setColour(colour);
     }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
