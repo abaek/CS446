@@ -49,6 +49,8 @@ public class CustomizeActivity extends AppCompatActivity implements ColourPicker
     private PagerTabsIndicator tabs;
     private PagerAdapter mPagerAdapter;
 
+    private String excerpt;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +108,11 @@ public class CustomizeActivity extends AppCompatActivity implements ColourPicker
     public void onResume() {
         super.onResume();
         String newExcerpt = getExcerptFromIntent();
-        contentPreview.setText(newExcerpt);
+        if(newExcerpt != null && !newExcerpt.equals(excerpt)) {
+            excerpt = newExcerpt;
+            contentPreview.setText(excerpt);
+            // TODO tell source fragment to perform new search
+        }
     }
 
     @Override
@@ -214,8 +220,11 @@ public class CustomizeActivity extends AppCompatActivity implements ColourPicker
         String intentAction = intent.getAction();
 
         boolean fromInternal = intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT);
+        boolean fromExternal = intentAction != null && intentAction.equals(Intent.ACTION_SEND);
 
-        if(fromInternal){
+        if(fromExternal) {
+            return intent.getStringExtra(Intent.EXTRA_TEXT).trim();
+        } else if(fromInternal){
             return intent.getStringExtra(EXCERPT);
         }
 
