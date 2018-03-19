@@ -25,6 +25,7 @@ allprojects {
 apply plugin: 'com.android.application'
 def TWITTER_KEY = TwitterKeyProp ?: '"Define Twitter key"';
 def TWITTER_SECRET_KEY = TwitterSecretKeyProp ?: '"Define Twitter secret key"';
+def BING_KEY_1 = BingKey1Prop ?: "Define Bing Key 1";
 
 android {
     compileSdkVersion 24
@@ -40,6 +41,7 @@ android {
         debug {
             buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
             buildConfigField 'String', 'TWITTER_SECRET_KEY', TWITTER_SECRET_KEY
+            buildConfigField 'String', 'BING_KEY_1', BING_KEY_1
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".debug"
@@ -48,6 +50,7 @@ android {
         release {
             buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
             buildConfigField 'String', 'TWITTER_SECRET_KEY', TWITTER_SECRET_KEY
+            buildConfigField 'String', 'BING_KEY_1', BING_KEY_1
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -63,6 +66,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.android.support:support-v4:24.2.1'
     compile 'com.hold1:pagertabindicator:1.0.7'
+    compile 'org.jsoup:jsoup:1.7.3'
 
     implementation 'com.android.support:design:24.2.0'
     compile 'org.twitter4j:twitter4j-core:4.0.4'

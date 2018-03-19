@@ -1,5 +1,6 @@
 package com.cs446.articleshare;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -24,7 +25,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cs446.articleshare.fragments.ColourPickerFragment;
+import com.cs446.articleshare.fragments.Source;
+import com.cs446.articleshare.fragments.SourcePickerFragment;
+import com.cs446.articleshare.tasks.BingSearchResults;
+import com.cs446.articleshare.tasks.WebSearchAsyncTask;
 import com.cs446.articleshare.views.MaxHeightScrollView;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.hold1.pagertabsindicator.PagerTabsIndicator;
 
 import java.io.ByteArrayOutputStream;
@@ -32,13 +39,18 @@ import java.io.ByteArrayOutputStream;
 import static com.cs446.articleshare.Util.EXCERPT;
 import static com.cs446.articleshare.Util.getBitmapFromView;
 
-public class CustomizeActivity extends AppCompatActivity implements ColourPickerFragment.ColourReceiver {
+public class CustomizeActivity
+        extends AppCompatActivity
+        implements ColourPickerFragment.ColourReceiver, SourcePickerFragment.OnSourceUpdateListener
+{
     public static final String IMAGE = "IMAGE";
     public static final String URL = "URL";
-
     private static final double MAX_SCROLL_VIEW_HEIGHT = 0.5; // as percentage of screen height
+    private static final int NUM_RESULTS = 3;
     // TODO don't use hard-coded string
     public static final String DEFAULT_COLOUR = "#009688"; // teal
+
+    private WebSearchAsyncTask currentTask = null;
 
     private LinearLayout backgroundView;
     private TextView titleView;
@@ -48,8 +60,12 @@ public class CustomizeActivity extends AppCompatActivity implements ColourPicker
     private MaxHeightScrollView scrollView;
     private PagerTabsIndicator tabs;
     private PagerAdapter mPagerAdapter;
+    private MenuItem nextItem;
 
-    private String excerpt;
+    private SourcePickerFragment sourcePickerFragment;
+
+    private String excerpt = null;
+    private String selectedUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,13 +127,21 @@ public class CustomizeActivity extends AppCompatActivity implements ColourPicker
         if(newExcerpt != null && !newExcerpt.equals(excerpt)) {
             excerpt = newExcerpt;
             contentPreview.setText(excerpt);
-            // TODO tell source fragment to perform new search
+            performSearch(excerpt);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (currentTask != null) currentTask.cancel(true);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.highlight, menu);
+        nextItem = menu.getItem(0);
+        nextItem.setEnabled(false);
         return true;
     }
 
@@ -136,6 +160,30 @@ public class CustomizeActivity extends AppCompatActivity implements ColourPicker
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+    }
+
+    private void performSearch(String query) {
+        titleView.setText(getString(R.string.loading));
+        websiteView.setText(getString(R.string.loading));
+
+
+        WebSearchAsyncTask searchTask = new WebSearchAsyncTask(query, NUM_RESULTS, new WebSearchAsyncTask.WebSearchAsyncTaskCallback() {
+            @Override
+            public void onComplete(Object o, Error error) {
+                if (sourcePickerFragment == null) {
+                    throw new RuntimeException("source picker fragment was null");
+                }
+                BingSearchResults webSearchResults = (BingSearchResults) o;
+                JsonObject resultsJson = new JsonParser()
+                        .parse(webSearchResults.getJson())
+                        .getAsJsonObject();
+                sourcePickerFragment.onSourceUpdated(resultsJson, error);
+            }
+        });
+
+        if (currentTask != null) currentTask.cancel(true);
+        currentTask = searchTask;
+        searchTask.execute();
     }
 
     private void initPager() {
@@ -235,7 +283,7 @@ public class CustomizeActivity extends AppCompatActivity implements ColourPicker
 
     private void share() {
         Intent intent = new Intent(this, ShareActivity.class);
-        intent.putExtra(URL, "https://twitter.com/"); // TODO dummy URL
+        intent.putExtra(URL, selectedUrl);
 
         Bitmap image = getBitmapFromView(
                 backgroundView,
@@ -255,6 +303,31 @@ public class CustomizeActivity extends AppCompatActivity implements ColourPicker
         setColour(colour);
     }
 
+    @Override
+    public void onSourceSelected(final Source source) {
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                final ObjectAnimator animScrollToTop =
+                        ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getBottom());
+                animScrollToTop.setDuration(500);
+                animScrollToTop.start();
+
+                String title = source.getTitle();
+                if(title == null || title.isEmpty()){
+                    titleView.setVisibility(View.GONE);
+                }else{
+                    titleView.setText(title);
+                    titleView.setVisibility(View.VISIBLE);
+                }
+                websiteView.setVisibility(View.VISIBLE);
+                websiteView.setText(source.getDisplayUrl());
+                selectedUrl = source.getUrl();
+            }
+        });
+        nextItem.setEnabled(true);
+    }
+
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         // TODO don't hardcode positions
 
@@ -267,10 +340,11 @@ public class CustomizeActivity extends AppCompatActivity implements ColourPicker
                 case 0:
                     return getString(ColourPickerFragment.title());
                 case 1:
-                    // TODO change to source picker
-                    return getString(ColourPickerFragment.title());
+                    return getString(SourcePickerFragment.title());
                 default:
-                    return "Error";
+                    throw new RuntimeException(
+                            "Unexpected position for ScreenSlidePagerAdapter getPageTitle"
+                    );
             }
         }
 
@@ -281,11 +355,12 @@ public class CustomizeActivity extends AppCompatActivity implements ColourPicker
                 case 0:
                     return ColourPickerFragment.newInstance();
                 case 1:
-                    // TODO change to source picker
-                    return ColourPickerFragment.newInstance();
+                    sourcePickerFragment = SourcePickerFragment.newInstance();
+                    return sourcePickerFragment;
                 default:
-                    // TODO throw error?
-                    return null;
+                    throw new RuntimeException(
+                            "Unexpected position for ScreenSlidePagerAdapter getItem"
+                    );
             }
         }
 

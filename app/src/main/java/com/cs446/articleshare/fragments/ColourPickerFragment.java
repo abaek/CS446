@@ -23,15 +23,15 @@ public class ColourPickerFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    public static int title() {
+        return R.string.tab_colour;
+    }
+
     public interface ColourReceiver {
         public void onColourUpdate(int colour);
     }
 
     ColourReceiver colourReceiver;
-
-    public static int title() {
-        return R.string.tab_colour;
-    }
 
     public ColourPickerFragment() {
         // Required empty public constructor
@@ -51,7 +51,18 @@ public class ColourPickerFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        colourReceiver = (ColourReceiver) context;
+        if (context instanceof ColourReceiver) {
+            colourReceiver = (ColourReceiver) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        colourReceiver = null;
     }
 
     @Override

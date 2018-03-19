@@ -11,13 +11,13 @@ import android.view.View;
 import android.widget.Toast;
 
 
-class Util {
+public class Util {
     static final String EXCERPT = "com.cs446.articleshare.excerpt";
     static final String IMAGEURI = "com.cs446.articleshare.imageurl";
 
     // Clipboard util
 
-    static String getTextFromClipboard(Activity activity, ClipboardManager clipboard){
+    public static String getTextFromClipboard(Activity activity, ClipboardManager clipboard){
         if(clipboard.getPrimaryClip() == null){
             Toast.makeText(activity,
                     activity.getString(R.string.empty_clipboard_toast),

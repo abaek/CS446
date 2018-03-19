@@ -15,6 +15,7 @@ import io.fabric.sdk.android.Fabric;
 public class App extends Application {
     public static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
     public static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
+    public static final String BING_KEY_1 = BuildConfig.BING_KEY_1;
 
     private static App singleton;
     private TwitterAuthConfig authConfig;
