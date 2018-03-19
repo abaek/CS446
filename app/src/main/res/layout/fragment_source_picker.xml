@@ -36,8 +36,7 @@
                 android:id="@+id/no_results_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_source_found"
-                android:layout_marginBottom="8dip">
+                android:text="@string/no_source_found">
             </TextView>
 
             <Button
@@ -46,7 +45,8 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button"
                 android:text="@string/use_url_from_clipboard"
-                android:textColor="@color/tw__solid_white"/>
+                android:textColor="@color/tw__solid_white"
+                android:layout_marginTop="8dip"/>
         </LinearLayout>
     </ScrollView>
 
