@@ -32,14 +32,17 @@ import static com.cs446.articleshare.Util.getTextFromClipboard;
 
 public class SourcePickerFragment extends Fragment {
     private ClipboardManager clipboard;
+
     ProgressBar spinner;
     ScrollView content;
     RadioGroup sourceGroup;
+    TextView noResultsText;
 
     List<AsyncTask> tasks;
     List<Source> sources;
 
     private OnSourceUpdateListener mListener;
+
     public SourcePickerFragment() {
         // Required empty public constructor
     }
@@ -57,21 +60,20 @@ public class SourcePickerFragment extends Fragment {
 
     public void onSourceUpdated(JsonObject searchResults, Error error) {
         if (error != null) {
-            // TODO show error
+            handleNoResultsFound();
             return;
         }
 
         if (searchResults != null) {
             JsonObject webPagesJson = searchResults.getAsJsonObject("webPages");
+            if (webPagesJson == null) {
+                handleNoResultsFound();
+                return;
+            }
             WebPages webPages = new Gson().fromJson(
                     new JsonParser().parse(webPagesJson.toString()),
                     WebPages.class
             );
-
-            if (webPages.getValue().isEmpty()) {
-                // TODO show no results error
-                return;
-            }
 
             for (int i = 0; i < webPages.getValue().size(); i++) {
                 final Value webPage = webPages.getValue().get(i);
@@ -88,6 +90,7 @@ public class SourcePickerFragment extends Fragment {
 
                             spinner.setVisibility(View.GONE);
                             content.setVisibility(View.VISIBLE);
+                            noResultsText.setVisibility(View.GONE);
                         }
                     });
                 tasks.add(titleTask);
@@ -101,7 +104,17 @@ public class SourcePickerFragment extends Fragment {
         } else {
             spinner.setVisibility(View.GONE);
             content.setVisibility(View.VISIBLE);
+            noResultsText.setVisibility(View.GONE);
         }
+    }
+
+    private void handleNoResultsFound() {
+        spinner.setVisibility(View.GONE);
+        content.setVisibility(View.VISIBLE);
+        noResultsText.setVisibility(View.VISIBLE);
+        mListener.onNoResultsFound();
+        Toast.makeText(getActivity(), getString(R.string.no_source_found),
+                Toast.LENGTH_SHORT).show();
     }
 
     private Source constructSource(Object o, Error error, Value webPage) {
@@ -165,6 +178,7 @@ public class SourcePickerFragment extends Fragment {
         content = (ScrollView) layout.findViewById(R.id.content);
         sourceGroup = (RadioGroup) layout.findViewById(R.id.source_options);
         Button pasteButton = (Button) layout.findViewById(R.id.paste_source_button);
+        noResultsText = (TextView) layout.findViewById(R.id.no_results_found);
 
         pasteButton.setOnClickListener(new Button.OnClickListener() {
 
@@ -243,6 +257,7 @@ public class SourcePickerFragment extends Fragment {
 
     public interface OnSourceUpdateListener {
         void onSourceSelected(Source source);
+        void onNoResultsFound();
     }
 }
 

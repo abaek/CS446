@@ -47,6 +47,8 @@ public class CustomizeActivity
     public static final String URL = "URL";
     private static final double MAX_SCROLL_VIEW_HEIGHT = 0.5; // as percentage of screen height
     private static final int NUM_RESULTS = 3;
+    private static final int COLOUR_ITEM = 0;
+    private static final int SOURCE_ITEM = 1;
     // TODO don't use hard-coded string
     public static final String DEFAULT_COLOUR = "#009688"; // teal
 
@@ -61,6 +63,7 @@ public class CustomizeActivity
     private PagerTabsIndicator tabs;
     private PagerAdapter mPagerAdapter;
     private MenuItem nextItem;
+    ViewPager mPager;
 
     private SourcePickerFragment sourcePickerFragment;
 
@@ -187,7 +190,7 @@ public class CustomizeActivity
     }
 
     private void initPager() {
-        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
@@ -328,6 +331,13 @@ public class CustomizeActivity
         nextItem.setEnabled(true);
     }
 
+    @Override
+    public void onNoResultsFound() {
+        titleView.setVisibility(View.GONE);
+        websiteView.setVisibility(View.GONE);
+        mPager.setCurrentItem(SOURCE_ITEM);
+    }
+
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         // TODO don't hardcode positions
 
@@ -337,9 +347,9 @@ public class CustomizeActivity
 
         public CharSequence getPageTitle(int position) {
             switch(position) {
-                case 0:
+                case COLOUR_ITEM:
                     return getString(ColourPickerFragment.title());
-                case 1:
+                case SOURCE_ITEM:
                     return getString(SourcePickerFragment.title());
                 default:
                     throw new RuntimeException(
@@ -352,9 +362,9 @@ public class CustomizeActivity
         public Fragment getItem(int position) {
             // TODO
             switch(position) {
-                case 0:
+                case COLOUR_ITEM:
                     return ColourPickerFragment.newInstance();
-                case 1:
+                case SOURCE_ITEM:
                     sourcePickerFragment = SourcePickerFragment.newInstance();
                     return sourcePickerFragment;
                 default:
