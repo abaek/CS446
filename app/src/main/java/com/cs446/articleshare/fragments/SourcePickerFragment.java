@@ -59,6 +59,11 @@ public class SourcePickerFragment extends Fragment {
     }
 
     public void onSourceUpdated(JsonObject searchResults, Error error) {
+        spinner.setVisibility(View.VISIBLE);
+        content.setVisibility(View.GONE);
+        sourceGroup.clearCheck();
+        sourceGroup.removeAllViews();
+        sources.clear();
         if (error != null) {
             handleNoResultsFound();
             return;
@@ -96,15 +101,6 @@ public class SourcePickerFragment extends Fragment {
                 tasks.add(titleTask);
                 titleTask.execute();
             }
-        }
-
-        if (sources.isEmpty()){
-            spinner.setVisibility(View.VISIBLE);
-            content.setVisibility(View.GONE);
-        } else {
-            spinner.setVisibility(View.GONE);
-            content.setVisibility(View.VISIBLE);
-            noResultsText.setVisibility(View.GONE);
         }
     }
 
