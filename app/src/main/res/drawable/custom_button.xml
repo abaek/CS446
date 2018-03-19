@@ -2,60 +2,60 @@
 <selector
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:state_pressed="true" >
+    <item android:state_pressed="true">
         <shape>
             <gradient
-                android:startColor="#00796B"
+                android:angle="270"
                 android:endColor="#00796B"
-                android:angle="270" />
+                android:startColor="#00796B"/>
             <stroke
                 android:width="3dp"
-                android:color="@color/tw__transparent" />
+                android:color="@color/tw__transparent"/>
             <corners
-                android:radius="3dp" />
+                android:radius="3dp"/>
             <padding
+                android:bottom="5dp"
                 android:left="10dp"
-                android:top="5dp"
                 android:right="10dp"
-                android:bottom="5dp" />
+                android:top="5dp"/>
         </shape>
     </item>
 
-    <item android:state_focused="true" >
+    <item android:state_focused="true">
         <shape>
             <gradient
+                android:angle="270"
                 android:endColor="#00796B"
-                android:startColor="#00796B"
-                android:angle="270" />
+                android:startColor="#00796B"/>
             <stroke
                 android:width="3dp"
-                android:color="@color/tw__transparent" />
+                android:color="@color/tw__transparent"/>
             <corners
-                android:radius="3dp" />
+                android:radius="3dp"/>
             <padding
+                android:bottom="5dp"
                 android:left="10dp"
-                android:top="5dp"
                 android:right="10dp"
-                android:bottom="5dp" />
+                android:top="5dp"/>
         </shape>
     </item>
 
     <item>
         <shape>
             <gradient
+                android:angle="270"
                 android:endColor="#009688"
-                android:startColor="#009688"
-                android:angle="270" />
+                android:startColor="#009688"/>
             <stroke
                 android:width="3dp"
-                android:color="@color/tw__transparent" />
+                android:color="@color/tw__transparent"/>
             <corners
-                android:radius="3dp" />
+                android:radius="3dp"/>
             <padding
+                android:bottom="5dp"
                 android:left="10dp"
-                android:top="5dp"
                 android:right="10dp"
-                android:bottom="5dp" />
+                android:top="5dp"/>
         </shape>
     </item>
 </selector>

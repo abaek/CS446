@@ -76,8 +76,8 @@ public class ShareActivity extends BaseActivity {
 
         initLogoutButton();
 
-//        selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
-//        initLinkPreviewView(selectedUrl);
+        selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
+        initLinkPreviewView(selectedUrl);
 
         tweetText = selectedUrl;
 

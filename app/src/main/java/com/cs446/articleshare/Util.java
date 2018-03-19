@@ -17,8 +17,8 @@ public class Util {
 
     // Clipboard util
 
-    public static String getTextFromClipboard(Activity activity, ClipboardManager clipboard){
-        if(clipboard.getPrimaryClip() == null){
+    public static String getTextFromClipboard(Activity activity, ClipboardManager clipboard) {
+        if (clipboard.getPrimaryClip() == null) {
             Toast.makeText(activity,
                     activity.getString(R.string.empty_clipboard_toast),
                     Toast.LENGTH_SHORT)
@@ -26,7 +26,7 @@ public class Util {
             return null;
         }
         ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-        if(item == null){
+        if (item == null) {
             Toast.makeText(activity,
                     activity.getString(R.string.empty_clipboard_toast),
                     Toast.LENGTH_SHORT)
@@ -34,7 +34,7 @@ public class Util {
             return null;
         }
         CharSequence text = item.getText();
-        if(text == null){
+        if (text == null) {
             Toast.makeText(activity,
                     activity.getString(R.string.clipboard_no_text),
                     Toast.LENGTH_SHORT)
@@ -59,11 +59,11 @@ public class Util {
         final int MAX_IMAGE_HEIGHT = 1920;
 
         int height = Math.min(MAX_IMAGE_HEIGHT, totalHeight);
-        float percent = height / (float)totalHeight;
+        float percent = height / (float) totalHeight;
 
         Bitmap canvasBitmap = Bitmap.createBitmap(
-                (int)(totalWidth*percent),
-                (int)(totalHeight*percent),
+                (int) (totalWidth * percent),
+                (int) (totalHeight * percent),
                 Bitmap.Config.ARGB_8888
         );
         Canvas canvas = new Canvas(canvasBitmap);

@@ -1,36 +1,39 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.cs446.articleshare.fragments.ColourPickerFragment">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.cs446.articleshare.fragments.ColourPickerFragment">
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+    <ScrollView android:id="@+id/content"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:layout_gravity="center_vertical">
-            <uz.shift.colorpicker.LineColorPicker xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:orientation="vertical">
+
+            <uz.shift.colorpicker.LineColorPicker
                 android:id="@+id/picker"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 app:orientation="horizontal"
+                app:selectedColorIndex="0"/>
 
-                app:selectedColorIndex="0" />
-
-            <uz.shift.colorpicker.LineColorPicker xmlns:app="http://schemas.android.com/apk/res-auto"
+            <uz.shift.colorpicker.LineColorPicker
                 android:id="@+id/picker2"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="8dp"
                 app:orientation="horizontal"
-                app:selectedColorIndex="5" />
+                app:selectedColorIndex="5"/>
+
         </LinearLayout>
     </ScrollView>
-
 </FrameLayout>

@@ -125,6 +125,7 @@
                 android:onClick="postTweet"
                 android:text="@string/tweet"
                 android:textColor="@color/tw__solid_white"/>
+
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

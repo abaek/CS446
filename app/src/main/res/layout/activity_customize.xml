@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".CustomizeActivity"
-    android:orientation="vertical">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:context=".CustomizeActivity">
 
     <com.hold1.pagertabsindicator.PagerTabsIndicator
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="48dip"
+        android:layout_alignParentTop="true"
         android:background="@color/colorPrimaryDark"
-        app:tab_text_color="@color/tw__solid_white"
-        app:tab_indicator_color="@color/tw__solid_white"
         app:tab_divider_color="@color/tw__transparent"
-        app:tab_indicator_bg_color="@color/colorPrimaryDark"
         app:tab_indicator="bottom_bar"
+        app:tab_indicator_bg_color="@color/colorPrimaryDark"
+        app:tab_indicator_color="@color/tw__solid_white"
         app:tab_lock_expanded="true"
-        android:layout_alignParentTop="true"/>
+        app:tab_text_color="@color/tw__solid_white"/>
 
     <android.support.v4.view.ViewPager
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pager"
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/tabs"
-        android:layout_above="@+id/preview_scroll"/>
+        android:layout_above="@+id/preview_scroll"
+        android:layout_below="@id/tabs"/>
 
     <com.cs446.articleshare.views.MaxHeightScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@id/preview_scroll"
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">

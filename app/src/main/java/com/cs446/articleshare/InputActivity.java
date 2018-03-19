@@ -4,16 +4,13 @@ import android.Manifest;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.Display;
@@ -45,7 +42,6 @@ import java.util.List;
 
 import static android.widget.ImageView.ScaleType.CENTER_CROP;
 import static com.cs446.articleshare.Util.EXCERPT;
-import static com.cs446.articleshare.Util.IMAGEURI;
 import static com.cs446.articleshare.Util.clipboardEmpty;
 import static com.cs446.articleshare.Util.getTextFromClipboard;
 
@@ -81,13 +77,20 @@ public class InputActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Dexter.withActivity(this)
-            .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-            .withListener(new PermissionListener() {
-                @Override public void onPermissionGranted(PermissionGrantedResponse response) { updateScreenshotGallery(); }
-                // TODO show button requesting permission again, on permission denied
-                @Override public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
-                @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
-            }).check();
+                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        updateScreenshotGallery();
+                    }
+
+                    // TODO show button requesting permission again, on permission denied
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
+                }).check();
 
         if (clipboardEmpty(clipboard)) {
             disablePasteButton();
