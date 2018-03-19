@@ -12,10 +12,10 @@
         android:layout_gravity="center">
     </ProgressBar>
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,20 +23,22 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:layout_gravity="center_vertical">
+            android:paddingBottom="10dp">
 
             <RadioGroup
                 android:id="@+id/source_options"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
             </RadioGroup>
 
             <TextView
                 android:id="@+id/no_results_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_source_found">
+                android:text="@string/no_source_found"
+                android:layout_gravity="center"
+                android:textSize="24sp">
             </TextView>
 
             <Button
@@ -48,6 +50,6 @@
                 android:textColor="@color/tw__solid_white"
                 android:layout_marginTop="8dip"/>
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </FrameLayout>

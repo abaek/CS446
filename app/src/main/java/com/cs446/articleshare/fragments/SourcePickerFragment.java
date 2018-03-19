@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +35,7 @@ public class SourcePickerFragment extends Fragment {
     private ClipboardManager clipboard;
 
     ProgressBar spinner;
-    ScrollView content;
+    NestedScrollView content;
     RadioGroup sourceGroup;
     TextView noResultsText;
 
@@ -171,7 +172,7 @@ public class SourcePickerFragment extends Fragment {
         );
 
         spinner = (ProgressBar) layout.findViewById(R.id.spinner);
-        content = (ScrollView) layout.findViewById(R.id.content);
+        content = (NestedScrollView) layout.findViewById(R.id.content);
         sourceGroup = (RadioGroup) layout.findViewById(R.id.source_options);
         Button pasteButton = (Button) layout.findViewById(R.id.paste_source_button);
         noResultsText = (TextView) layout.findViewById(R.id.no_results_found);
