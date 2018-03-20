@@ -7,10 +7,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ActionMode;
@@ -24,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cs446.articleshare.R;
+import com.cs446.articleshare.adapters.ScreenSlidePagerAdapter;
 import com.cs446.articleshare.fragments.ColourPickerFragment;
 import com.cs446.articleshare.fragments.Source;
 import com.cs446.articleshare.fragments.SourcePickerFragment;
@@ -47,8 +44,6 @@ public class CustomizeActivity
     public static final String URL = "URL";
     private static final double MAX_SCROLL_VIEW_HEIGHT = 0.5; // as percentage of screen height
     private static final int NUM_RESULTS = 3;
-    private static final int COLOUR_ITEM = 0;
-    private static final int SOURCE_ITEM = 1;
     // TODO don't use hard-coded string
     public static final String DEFAULT_COLOUR = "#009688"; // teal
 
@@ -61,9 +56,9 @@ public class CustomizeActivity
     private TextView contentPreview;
     private MaxHeightScrollView scrollView;
     private MenuItem nextItem;
-    ViewPager mPager;
 
-    private SourcePickerFragment sourcePickerFragment;
+    ViewPager mPager;
+    ScreenSlidePagerAdapter pagerAdapter;
 
     private String excerpt = null;
     private String selectedUrl;
@@ -167,14 +162,15 @@ public class CustomizeActivity
         WebSearchAsyncTask searchTask = new WebSearchAsyncTask(query, NUM_RESULTS, new WebSearchAsyncTask.WebSearchAsyncTaskCallback() {
             @Override
             public void onComplete(Object o, Error error) {
-                if (sourcePickerFragment == null) {
+                SourcePickerFragment sourcePicker = pagerAdapter.getSourcePickerFragment();
+                if (sourcePicker == null) {
                     throw new RuntimeException("source picker fragment was null");
                 }
                 BingSearchResults webSearchResults = (BingSearchResults) o;
                 JsonObject resultsJson = new JsonParser()
                         .parse(webSearchResults.getJson())
                         .getAsJsonObject();
-                sourcePickerFragment.onSourceUpdated(resultsJson, error);
+                sourcePicker.onSourceUpdated(resultsJson, error);
             }
         });
 
@@ -185,7 +181,7 @@ public class CustomizeActivity
 
     private void initPager() {
         mPager = (ViewPager) findViewById(R.id.pager);
-        PagerAdapter pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
 
         PagerTabsIndicator tabs = (PagerTabsIndicator) findViewById(R.id.tabs);
@@ -331,50 +327,7 @@ public class CustomizeActivity
     public void onNoResultsFound() {
         titleView.setVisibility(View.GONE);
         websiteView.setVisibility(View.GONE);
-        mPager.setCurrentItem(SOURCE_ITEM);
-    }
-
-    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-        ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        public CharSequence getPageTitle(int position) {
-            switch(position) {
-                case COLOUR_ITEM:
-                    return getString(ColourPickerFragment.title());
-                case SOURCE_ITEM:
-                    return getString(SourcePickerFragment.title());
-                default:
-                    throw new RuntimeException(
-                            "Unexpected position for ScreenSlidePagerAdapter getPageTitle"
-                    );
-            }
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch(position) {
-                case COLOUR_ITEM:
-                    return ColourPickerFragment.newInstance();
-                case SOURCE_ITEM:
-                    sourcePickerFragment = SourcePickerFragment.newInstance();
-                    return sourcePickerFragment;
-                default:
-                    throw new RuntimeException(
-                            "Unexpected position for ScreenSlidePagerAdapter getItem"
-                    );
-            }
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
-        }
+        mPager.setCurrentItem(ScreenSlidePagerAdapter.SOURCE_ITEM);
     }
 }
+

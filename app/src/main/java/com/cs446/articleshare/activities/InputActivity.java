@@ -2,22 +2,16 @@ package com.cs446.articleshare.activities;
 
 import android.Manifest;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
-import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -25,7 +19,8 @@ import android.widget.Toast;
 
 import com.cs446.articleshare.App;
 import com.cs446.articleshare.R;
-import com.cs446.articleshare.views.AspectRatioImageView;
+import com.cs446.articleshare.Util;
+import com.cs446.articleshare.adapters.ScreenshotGridViewAdapter;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
@@ -35,23 +30,11 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
-import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.widget.ImageView.ScaleType.CENTER_CROP;
-import static com.cs446.articleshare.Util.EXCERPT;
-import static com.cs446.articleshare.Util.clipboardEmpty;
-import static com.cs446.articleshare.Util.getTextFromClipboard;
 
 public class InputActivity extends AppCompatActivity {
-
-    public static final String IMAGE = "com.cs446.articleshare.image";
-
     private GridView gv;
     private TextView selectScreenshot;
     private TextView noScreenshot;
@@ -98,7 +81,7 @@ public class InputActivity extends AppCompatActivity {
             updateScreenshotGallery();
         }
 
-        if (clipboardEmpty(clipboard)) {
+        if (Util.clipboardEmpty(clipboard)) {
             disablePasteButton();
         } else {
             enablePasteButton();
@@ -118,7 +101,7 @@ public class InputActivity extends AppCompatActivity {
     }
 
     public void pasteClipboard(View view) {
-        String pasteData = getTextFromClipboard(this, clipboard);
+        String pasteData = Util.getTextFromClipboard(this, clipboard);
 
         String excerpt;
         if (pasteData != null) {
@@ -154,12 +137,20 @@ public class InputActivity extends AppCompatActivity {
     private void pushToCustomizePage(String excerpt) {
         Intent intent = new Intent(this, CustomizeActivity.class);
         intent.setAction(Intent.ACTION_DEFAULT);
-        intent.putExtra(EXCERPT, excerpt);
+        intent.putExtra(Util.EXCERPT, excerpt);
         startActivity(intent);
     }
 
     private void updateScreenshotGallery() {
-        GridViewAdapter gvAdapter = new GridViewAdapter(this);
+        ScreenshotGridViewAdapter gvAdapter = new ScreenshotGridViewAdapter(
+            this,
+            getWindowManager().getDefaultDisplay(),
+            new ScreenshotGridViewAdapter.Callback() {
+                @Override
+                public void onImageClicked(Uri imageUri) {
+                    startCropper(imageUri);
+                }
+            });
         gv.setAdapter(gvAdapter);
 
         if (gvAdapter.isEmpty()) {
@@ -171,114 +162,15 @@ public class InputActivity extends AppCompatActivity {
         }
     }
 
-
-    public static List<String> getCameraImages(Context context) {
-        final String[] columns = {MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED};
-
-        final Cursor cursor = context.getContentResolver().query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                columns,
-                MediaStore.Images.Media.DATA + " like ? ",
-                new String[]{"%/Screenshots/%"},
-                MediaStore.Images.Media.DATE_ADDED + " DESC"
-        );
-        if (cursor == null) {
-            return new ArrayList<>();
-        }
-        ArrayList<String> result = new ArrayList<>(cursor.getCount());
-        if (cursor.moveToFirst()) {
-            final int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            do {
-                final String data = cursor.getString(dataColumn);
-                result.add(data);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return result;
-    }
-
-
-    class GridViewAdapter extends BaseAdapter {
-        private final Context context;
-        List<String> urls;
-
-        GridViewAdapter(Context context) {
-            this.context = context;
-            urls = getCameraImages(context);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            AspectRatioImageView view = (AspectRatioImageView) convertView;
-            if (view == null) {
-                view = getScreenshotThumbnailView();
-            }
-
-            // Get the image URL for the current position.
-            final Uri source = getItem(position);
-
-            Picasso.with(context)
-                    .load(source)
-                    .placeholder(R.color.md_teal_200)
-                    .error(R.color.md_blue_grey_800)
-                    .fit()
-                    .centerCrop()
-                    .tag(context)
-                    .into(view);
-
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openScreenshot(source);
-                }
-            });
-
-            return view;
-        }
-
-        private AspectRatioImageView getScreenshotThumbnailView() {
-            AspectRatioImageView view;
-            Display display = getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            float ratio = ((float) size.y) / size.x;
-
-            view = new AspectRatioImageView(context, ratio);
-            view.setScaleType(CENTER_CROP);
-            return view;
-        }
-
-        private void openScreenshot(Uri source) {
-            if (source == null) {
-                // TODO show error
-                return;
-            }
-            if (source.toString() == null || source.toString().isEmpty()) {
-                // TODO show error
-                return;
-            }
-
-            startCropper(source);
-        }
-
-        @Override
-        public int getCount() {
-            return urls.size();
-        }
-
-        @Override
-        public Uri getItem(int position) {
-            return Uri.fromFile(new File(urls.get(position)));
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-    }
-
     private void startCropper(Uri imageUri) {
+        if (imageUri == null) {
+            // TODO show error
+            return;
+        }
+        if (imageUri.toString() == null || imageUri.toString().isEmpty()) {
+            // TODO show error
+            return;
+        }
         CropImage.activity(imageUri).start(this);
     }
 
@@ -297,13 +189,13 @@ public class InputActivity extends AppCompatActivity {
 
                     SparseArray<TextBlock> textBlocks = textRecognizer.detect(imageFrame);
 
-                    String recognizedText = "";
+                    StringBuilder recognizedText = new StringBuilder();
                     for (int i = 0; i < textBlocks.size(); i++) {
                         TextBlock textBlock = textBlocks.get(textBlocks.keyAt(i));
                         String text = textBlock.getValue();
-                        recognizedText += text;
+                        recognizedText.append(text);
                     }
-                    pushToCustomizePage(recognizedText);
+                    pushToCustomizePage(recognizedText.toString());
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -315,3 +207,4 @@ public class InputActivity extends AppCompatActivity {
         }
     }
 }
+

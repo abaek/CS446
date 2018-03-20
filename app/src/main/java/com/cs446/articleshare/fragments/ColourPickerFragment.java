@@ -15,8 +15,8 @@ import uz.shift.colorpicker.OnColorChangedListener;
 
 public class ColourPickerFragment extends Fragment {
 
-    public static int title() {
-        return R.string.tab_colour;
+    public static String title() {
+        return "Colour";
     }
 
     public interface ColourReceiver {

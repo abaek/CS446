@@ -17,8 +17,6 @@
     <string name="no_internet_error">Error: Check your internet connection.</string>
     <string name="done">Done</string>
     <string name="loading">Loading…</string>
-    <string name="tab_colour">COLOUR</string>
-    <string name="tab_source">SOURCE</string>
     <string name="use_url_from_clipboard">Use URL from clipboard</string>
     <string name="no_source_found">No source found</string>
     <string name="posting_to_twitter">Posting to Twitter...</string>

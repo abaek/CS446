@@ -46,8 +46,8 @@ public class SourcePickerFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static int title() {
-        return R.string.tab_source;
+    public static String title() {
+        return "Source";
     }
 
     public static SourcePickerFragment newInstance() {
