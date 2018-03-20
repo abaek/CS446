@@ -19,9 +19,10 @@ import android.widget.Toast;
 
 import com.cs446.articleshare.R;
 import com.cs446.articleshare.Util;
+import com.cs446.articleshare.dataStructures.Source;
 import com.cs446.articleshare.tasks.GetWebpageTitleAsyncTask;
-import com.cs446.articleshare.tasks.Value;
-import com.cs446.articleshare.tasks.WebPages;
+import com.cs446.articleshare.dataStructures.Value;
+import com.cs446.articleshare.dataStructures.WebPages;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

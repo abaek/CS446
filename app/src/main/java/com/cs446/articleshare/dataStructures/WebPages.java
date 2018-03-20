@@ -1,4 +1,4 @@
-package com.cs446.articleshare.tasks;
+package com.cs446.articleshare.dataStructures;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

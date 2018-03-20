@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 
 import com.cs446.articleshare.App;
+import com.cs446.articleshare.dataStructures.BingSearchResults;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -59,7 +60,7 @@ public class WebSearchAsyncTask extends AsyncTask<Void, Void, Void> {
             for (String header : headers.keySet()) {
                 if (header == null) continue;      // may have null key
                 if (header.startsWith("BingAPIs-") || header.startsWith("X-MSEdge-")) {
-                    results.relevantHeaders.put(header, headers.get(header).get(0));
+                    results.getRelevantHeaders().put(header, headers.get(header).get(0));
                 }
             }
 

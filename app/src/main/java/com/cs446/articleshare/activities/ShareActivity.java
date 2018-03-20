@@ -6,11 +6,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -24,6 +22,7 @@ import android.widget.Toast;
 import com.cs446.articleshare.App;
 import com.cs446.articleshare.R;
 import com.cs446.articleshare.Util;
+import com.cs446.articleshare.tasks.UpdateTwitterStatusTask;
 import com.twitter.Validator;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -37,11 +36,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import twitter4j.StatusUpdate;
-import twitter4j.TwitterFactory;
-import twitter4j.auth.AccessToken;
-import twitter4j.conf.ConfigurationBuilder;
 
 public class ShareActivity extends BaseActivity {
 
@@ -269,74 +263,36 @@ public class ShareActivity extends BaseActivity {
 
     public void postTweet(View view) {
         File imageFile = getFileStreamPath(fileName);
-        UpdateTwitterStatusTask postTweet = new UpdateTwitterStatusTask(tweetText, imageFile);
+        UpdateTwitterStatusTask postTweet = new UpdateTwitterStatusTask(twitterSession, tweetText, imageFile,
+        new UpdateTwitterStatusTask.Callback() {
+            @Override
+            public void onComplete(twitter4j.TwitterException error) {
+                closeDialog();
+                if (error != null) {
+                    Toast.makeText(ShareActivity.this, R.string.failed_to_tweet, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Toast.makeText(ShareActivity.this, getString(R.string.posted_to_twitter), Toast.LENGTH_SHORT).show();
+                tweet.setEnabled(false);
+                tweetButton.setVisibility(View.GONE);
+                openTwitterButton.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onStart() {
+                ProgressDialog pDialog = new ProgressDialog(ShareActivity.this);
+                pDialog.setMessage(getString(R.string.posting_to_twitter));
+                pDialog.setIndeterminate(false);
+                pDialog.setCancelable(false);
+                displayDialog(pDialog);
+            }
+        });
         postTweet.execute();
     }
 
     public void viewTwitter(View view) {
         App.getInstance().openTwitterProfile(twitterSession.getUserName());
     }
-
-    // TODO refactor so that this task is decoupled from ShareActivity
-    public class UpdateTwitterStatusTask extends AsyncTask<String, String, Void> {
-
-        String status;
-        File image;
-
-        UpdateTwitterStatusTask(String status, File image) {
-            this.status = status;
-            this.image = image;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            ProgressDialog pDialog = new ProgressDialog(ShareActivity.this);
-            pDialog.setMessage(getString(R.string.posting_to_twitter));
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            displayDialog(pDialog);
-        }
-
-        protected Void doInBackground(String... args) {
-
-            try {
-                ConfigurationBuilder builder = new ConfigurationBuilder();
-                builder.setOAuthConsumerKey(App.TWITTER_KEY);
-                builder.setOAuthConsumerSecret(App.TWITTER_SECRET);
-
-                // Access Token
-                String access_token = twitterSession.getAuthToken().token;
-                // Access Token Secret
-                String access_token_secret = twitterSession.getAuthToken().secret;
-
-                AccessToken accessToken = new AccessToken(access_token, access_token_secret);
-                twitter4j.Twitter twitter = new TwitterFactory(builder.build()).getInstance(accessToken);
-
-                // Update status
-                StatusUpdate statusUpdate = new StatusUpdate(status);
-                statusUpdate.setMedia(image);
-
-                twitter4j.Status response = twitter.updateStatus(statusUpdate);
-
-                Log.d("Status", response.getText());
-
-            } catch (twitter4j.TwitterException e) {
-                Toast.makeText(ShareActivity.this, R.string.failed_to_tweet, Toast.LENGTH_LONG).show();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            /* Dismiss the progress dialog after sharing */
-            closeDialog();
-            Toast.makeText(ShareActivity.this, getString(R.string.posted_to_twitter), Toast.LENGTH_SHORT).show();
-            tweet.setEnabled(false);
-            tweetButton.setVisibility(View.GONE);
-            openTwitterButton.setVisibility(View.VISIBLE);
-        }
-
-    }
 }
+
+

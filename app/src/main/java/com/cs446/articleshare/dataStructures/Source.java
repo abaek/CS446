@@ -1,10 +1,10 @@
-package com.cs446.articleshare.fragments;
+package com.cs446.articleshare.dataStructures;
 
 public class Source {
     private String title;
     private String url;
     private String displayUrl;
-    Source(String title, String displayUrl, String url) {
+    public Source(String title, String displayUrl, String url) {
         this.title = title;
         this.url = url;
         this.displayUrl = displayUrl;
