@@ -22,4 +22,6 @@
     <string name="use_url_from_clipboard">Use URL from clipboard</string>
     <string name="no_source_found">No source found</string>
     <string name="posting_to_twitter">Posting to Twitter...</string>
+    <string name="twitter_app_not_installed_msg">The Twitter app must be installed to login.</string>
+    <string name="failed_to_tweet">Error: Failed to post to Twitter. Please try again later.</string>
 </resources>

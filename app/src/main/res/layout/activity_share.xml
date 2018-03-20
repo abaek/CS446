@@ -126,6 +126,16 @@
                 android:text="@string/tweet"
                 android:textColor="@color/tw__solid_white"/>
 
+            <Button
+                android:id="@+id/open_twitter_button"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tweet_button"
+                android:onClick="viewTwitter"
+                android:text="@string/view_on_twitter"
+                android:textColor="@color/tw__solid_white"/>
+
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

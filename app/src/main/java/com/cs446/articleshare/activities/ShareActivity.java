@@ -50,6 +50,7 @@ public class ShareActivity extends BaseActivity {
     private TwitterLoginButton loginButton;
     private TextView userName;
     private Button tweetButton;
+    private Button openTwitterButton;
     private TextView characterCount;
     private EditText tweet;
     private LinearLayout tweetLayout;
@@ -68,6 +69,9 @@ public class ShareActivity extends BaseActivity {
         setContentView(R.layout.activity_share);
 
         tweetButton = (Button) findViewById(R.id.tweet_button);
+        openTwitterButton = (Button) findViewById(R.id.open_twitter_button);
+        openTwitterButton.setVisibility(View.GONE);
+
         userName = (TextView) findViewById(R.id.user_name);
 
         tweetLayout = (LinearLayout) findViewById(R.id.tweet_layout);
@@ -233,7 +237,7 @@ public class ShareActivity extends BaseActivity {
 
             @Override
             public void failure(TwitterException exception) {
-
+                Toast.makeText(ShareActivity.this, R.string.twitter_app_not_installed_msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -267,6 +271,10 @@ public class ShareActivity extends BaseActivity {
         File imageFile = getFileStreamPath(fileName);
         UpdateTwitterStatusTask postTweet = new UpdateTwitterStatusTask(tweetText, imageFile);
         postTweet.execute();
+    }
+
+    public void viewTwitter(View view) {
+        App.getInstance().openTwitterProfile(twitterSession.getUserName());
     }
 
     // TODO refactor so that this task is decoupled from ShareActivity
@@ -315,7 +323,7 @@ public class ShareActivity extends BaseActivity {
                 Log.d("Status", response.getText());
 
             } catch (twitter4j.TwitterException e) {
-                Log.d("Failed to post!", e.getMessage());
+                Toast.makeText(ShareActivity.this, R.string.failed_to_tweet, Toast.LENGTH_LONG).show();
             }
             return null;
         }
@@ -326,13 +334,8 @@ public class ShareActivity extends BaseActivity {
             closeDialog();
             Toast.makeText(ShareActivity.this, getString(R.string.posted_to_twitter), Toast.LENGTH_SHORT).show();
             tweet.setEnabled(false);
-            tweetButton.setText(getString(R.string.view_on_twitter));
-            tweetButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    App.getInstance().openTwitterProfile(twitterSession.getUserName());
-                }
-            });
+            tweetButton.setVisibility(View.GONE);
+            openTwitterButton.setVisibility(View.VISIBLE);
         }
 
     }
