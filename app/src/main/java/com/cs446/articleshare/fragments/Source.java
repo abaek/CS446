@@ -1,10 +1,10 @@
 package com.cs446.articleshare.fragments;
 
 public class Source {
-    String title;
-    String url;
-    String displayUrl;
-    public Source(String title, String displayUrl, String url) {
+    private String title;
+    private String url;
+    private String displayUrl;
+    Source(String title, String displayUrl, String url) {
         this.title = title;
         this.url = url;
         this.displayUrl = displayUrl;

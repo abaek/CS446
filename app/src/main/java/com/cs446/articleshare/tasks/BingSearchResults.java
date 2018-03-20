@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class BingSearchResults{
     HashMap<String, String> relevantHeaders;
-    String jsonResponse;
+    private String jsonResponse;
 
     public String getJson() {
         return jsonResponse;

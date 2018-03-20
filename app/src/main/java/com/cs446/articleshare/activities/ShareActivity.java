@@ -1,5 +1,6 @@
-package com.cs446.articleshare;
+package com.cs446.articleshare.activities;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,6 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cs446.articleshare.App;
+import com.cs446.articleshare.R;
+import com.cs446.articleshare.Util;
 import com.twitter.Validator;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -43,16 +47,14 @@ public class ShareActivity extends BaseActivity {
 
     private TwitterSession twitterSession;
 
-    private ProgressDialog pDialog;
-
     private TwitterLoginButton loginButton;
     private TextView userName;
     private Button tweetButton;
     private TextView characterCount;
     private EditText tweet;
     private LinearLayout tweetLayout;
-    private Bitmap img;
 
+    private Bitmap img;
     private String fileName;
     private String tweetText;
     private String selectedUrl;
@@ -102,11 +104,23 @@ public class ShareActivity extends BaseActivity {
     }
 
     private boolean saveImage() {
+        @SuppressLint("SimpleDateFormat") // locale unnecessary
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MMdd_HHmm_ssSS");
         Date now = new Date();
         String strDate = sdf.format(now);
         fileName = strDate + ".png";
-        return saveFile(fileName, img);
+
+        FileOutputStream outputStream;
+        try {
+            outputStream = openFileOutput(fileName, MODE_PRIVATE);
+            img.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void initPreviewImage() {
@@ -117,7 +131,9 @@ public class ShareActivity extends BaseActivity {
 
     private Bitmap getImagePreview() {
         Bundle extras = getIntent().getExtras();
+        assert extras != null;
         byte[] byteArray = extras.getByteArray(CustomizeActivity.IMAGE);
+        assert byteArray != null;
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 
@@ -132,6 +148,7 @@ public class ShareActivity extends BaseActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
             }
 
+            @SuppressLint("SetTextI18n")
             @Override
             public void afterTextChanged(Editable editable) {
 
@@ -164,16 +181,7 @@ public class ShareActivity extends BaseActivity {
     private void initLinkPreviewView(String selectedUrl) {
         final int LINK_PREVIEW_LENGTH = 32;
 
-        String baseUrl = selectedUrl;
-        if (baseUrl.startsWith("https://www.")) {
-            baseUrl = baseUrl.substring("https://www.".length());
-        } else if (baseUrl.startsWith("http://www.")) {
-            baseUrl = baseUrl.substring("http://www.".length());
-        } else if (baseUrl.startsWith("https://")) {
-            baseUrl = baseUrl.substring("https://".length());
-        } else if (baseUrl.startsWith("http://")) {
-            baseUrl = baseUrl.substring("http://".length());
-        }
+        String baseUrl = Util.getPrettyUrl(selectedUrl);
         String urlPreview;
         if (baseUrl.length() < LINK_PREVIEW_LENGTH) {
             urlPreview = baseUrl;
@@ -185,6 +193,7 @@ public class ShareActivity extends BaseActivity {
         linkPreview.setTextColor(getResources().getColor(R.color.tw__blue_default));
     }
 
+    @SuppressLint("SetTextI18n")
     private void initCharacterCountView(int characterLimit) {
         characterCount = (TextView) findViewById(R.id.character_count);
         characterCount.setText(Integer.toString(characterLimit));
@@ -196,7 +205,7 @@ public class ShareActivity extends BaseActivity {
         loginButton.setVisibility(View.GONE);
         tweetLayout.setVisibility(View.VISIBLE);
         tweetButton.setVisibility(View.VISIBLE);
-        userName.setText(PREFIX + twitterSession.getUserName());
+        userName.setText(String.format("%s%s", PREFIX, twitterSession.getUserName()));
     }
 
     private void showLoggedOutState() {
@@ -208,9 +217,8 @@ public class ShareActivity extends BaseActivity {
         tweetLayout.setVisibility(View.GONE);
         tweetButton.setVisibility(View.GONE);
         if (view != null) {
-            InputMethodManager imm =
-                    (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 
@@ -233,23 +241,11 @@ public class ShareActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         File imageFile = getFileStreamPath(fileName);
-        imageFile.delete();
-        super.onDestroy();
-    }
-
-    private boolean saveFile(String fileName, Bitmap image) {
-        FileOutputStream outputStream;
-
-        try {
-            outputStream = openFileOutput(fileName, MODE_PRIVATE);
-            image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-            outputStream.flush();
-            outputStream.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
+        boolean delete = imageFile.delete();
+        if (!delete) {
+            // TODO show warning ?
         }
-        return false;
+        super.onDestroy();
     }
 
     @Override
@@ -273,12 +269,13 @@ public class ShareActivity extends BaseActivity {
         postTweet.execute();
     }
 
-    class UpdateTwitterStatusTask extends AsyncTask<String, String, Void> {
+    // TODO refactor so that this task is decoupled from ShareActivity
+    public class UpdateTwitterStatusTask extends AsyncTask<String, String, Void> {
 
         String status;
         File image;
 
-        public UpdateTwitterStatusTask(String status, File image) {
+        UpdateTwitterStatusTask(String status, File image) {
             this.status = status;
             this.image = image;
         }
@@ -287,8 +284,8 @@ public class ShareActivity extends BaseActivity {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            pDialog = new ProgressDialog(ShareActivity.this);
-            pDialog.setMessage("Posting to Twitter...");
+            ProgressDialog pDialog = new ProgressDialog(ShareActivity.this);
+            pDialog.setMessage(getString(R.string.posting_to_twitter));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             displayDialog(pDialog);

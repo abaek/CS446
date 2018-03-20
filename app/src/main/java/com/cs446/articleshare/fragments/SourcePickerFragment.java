@@ -14,11 +14,11 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs446.articleshare.R;
+import com.cs446.articleshare.Util;
 import com.cs446.articleshare.tasks.ParseHtmlAsyncTask;
 import com.cs446.articleshare.tasks.Value;
 import com.cs446.articleshare.tasks.WebPages;
@@ -28,8 +28,6 @@ import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.cs446.articleshare.Util.getTextFromClipboard;
 
 public class SourcePickerFragment extends Fragment {
     private ClipboardManager clipboard;
@@ -119,26 +117,7 @@ public class SourcePickerFragment extends Fragment {
         if (error == null && ((String) o).length() > 0) {
             title = (String) o;
         }
-        return new Source(title, getPrettyUrl(webPage.getDisplayUrl()), webPage.getUrl());
-    }
-
-
-    private String getPrettyUrl(String url) {
-        String baseUrl = url;
-        if(baseUrl.startsWith("https://www.")){
-            baseUrl = baseUrl.substring("https://www.".length());
-        }else if(baseUrl.startsWith("http://www.")){
-            baseUrl = baseUrl.substring("http://www.".length());
-        }else if(baseUrl.startsWith("https://")){
-            baseUrl = baseUrl.substring("https://".length());
-        }else if(baseUrl.startsWith("http://")){
-            baseUrl = baseUrl.substring("http://".length());
-        }
-        int backslashAt = baseUrl.indexOf('/');
-        if(backslashAt > 0){
-            baseUrl = baseUrl.substring(0, backslashAt);
-        }
-        return baseUrl;
+        return new Source(title, Util.getPrettyBaseUrl(webPage.getDisplayUrl()), webPage.getUrl());
     }
 
     private RadioButton getRadioButton(Source source, int index) {
@@ -181,7 +160,7 @@ public class SourcePickerFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
-                final String pasteData = getTextFromClipboard(getActivity(), clipboard);
+                final String pasteData = Util.getTextFromClipboard(getActivity(), clipboard);
                 if(pasteData != null){
                     useCustomUrl(pasteData, sourceGroup);
                 }else{
@@ -215,7 +194,7 @@ public class SourcePickerFragment extends Fragment {
                         }
                         String title = (String) o;
 
-                        String baseUrl = getPrettyUrl(url);
+                        String baseUrl = Util.getPrettyBaseUrl(url);
 
                         Source customSource = new Source(title, baseUrl, url);
                         if(sourceSelect != null) sourceSelect.clearCheck();

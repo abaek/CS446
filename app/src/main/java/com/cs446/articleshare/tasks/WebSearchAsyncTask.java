@@ -20,8 +20,6 @@ import javax.net.ssl.HttpsURLConnection;
  * Performs a web search on text
  */
 public class WebSearchAsyncTask extends AsyncTask<Void, Void, Void> {
-
-    private final String TAG = getClass().getName();
     private final static int MAX_QUERY_LENGTH = 2048; // TODO use this constant to limit URL length
     private final static String HOST = "https://api.cognitive.microsoft.com";
     private final static String PATH = "/bing/v7.0/search";

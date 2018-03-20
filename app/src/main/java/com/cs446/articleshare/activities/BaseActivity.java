@@ -1,4 +1,4 @@
-package com.cs446.articleshare;
+package com.cs446.articleshare.activities;
 
 import android.app.Dialog;
 import android.support.v7.app.AppCompatActivity;

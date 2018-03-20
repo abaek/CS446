@@ -18,7 +18,6 @@ public class App extends Application {
     public static final String BING_KEY_1 = BuildConfig.BING_KEY_1;
 
     private static App singleton;
-    private TwitterAuthConfig authConfig;
 
     public static App getInstance() {
         return singleton;
@@ -28,7 +27,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         singleton = this;
-        authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
     }
 
@@ -62,8 +61,9 @@ public class App extends Application {
     }
 
     public boolean isNetworkAvailable() {
-        return ((ConnectivityManager) getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE))
-                .getActiveNetworkInfo() != null;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        // TODO handle null pointer exception?
+        return connectivityManager.getActiveNetworkInfo() != null;
     }
 }

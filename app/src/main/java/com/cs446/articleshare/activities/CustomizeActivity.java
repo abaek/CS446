@@ -1,4 +1,4 @@
-package com.cs446.articleshare;
+package com.cs446.articleshare.activities;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Display;
 import android.view.GestureDetector;
@@ -24,6 +23,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.cs446.articleshare.R;
 import com.cs446.articleshare.fragments.ColourPickerFragment;
 import com.cs446.articleshare.fragments.Source;
 import com.cs446.articleshare.fragments.SourcePickerFragment;
@@ -60,8 +60,6 @@ public class CustomizeActivity
 
     private TextView contentPreview;
     private MaxHeightScrollView scrollView;
-    private PagerTabsIndicator tabs;
-    private PagerAdapter mPagerAdapter;
     private MenuItem nextItem;
     ViewPager mPager;
 
@@ -78,10 +76,6 @@ public class CustomizeActivity
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
-
-        // TODO temp values
-        titleView.setText("WEBPAGE TITLE HERE");
-        websiteView.setText("WEBPAGE DOMAIN HERE");
 
         scrollView = (MaxHeightScrollView) findViewById(R.id.preview_scroll);
         initializeScrollView(scrollView);
@@ -191,10 +185,10 @@ public class CustomizeActivity
 
     private void initPager() {
         mPager = (ViewPager) findViewById(R.id.pager);
-        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-        mPager.setAdapter(mPagerAdapter);
+        PagerAdapter pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(pagerAdapter);
 
-        tabs = (PagerTabsIndicator) findViewById(R.id.tabs);
+        PagerTabsIndicator tabs = (PagerTabsIndicator) findViewById(R.id.tabs);
         tabs.setViewPager(mPager);
     }
 
@@ -270,18 +264,20 @@ public class CustomizeActivity
         Intent intent = getIntent();
         String intentAction = intent.getAction();
 
-        boolean fromInternal = intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT);
-        boolean fromExternal = intentAction != null && intentAction.equals(Intent.ACTION_SEND);
+        if (intentAction == null) {
+            throw new RuntimeException("Intent action for CustomizeActivity cannot be null");
+        }
+
+        boolean fromInternal = intentAction.equals(Intent.ACTION_DEFAULT);
+        boolean fromExternal = intentAction.equals(Intent.ACTION_SEND);
 
         if(fromExternal) {
             return intent.getStringExtra(Intent.EXTRA_TEXT).trim();
         } else if(fromInternal){
             return intent.getStringExtra(EXCERPT);
+        } else {
+            throw new RuntimeException("Unexpected intent passed to CustomizeActivity");
         }
-
-        // TODO throw an exception instead?
-        Log.e("CustomizeActivity", "Unexpected intent, excerpt String returned null");
-        return null;
     }
 
     private void share() {
@@ -339,9 +335,7 @@ public class CustomizeActivity
     }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-        // TODO don't hardcode positions
-
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
+        ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -360,7 +354,6 @@ public class CustomizeActivity
 
         @Override
         public Fragment getItem(int position) {
-            // TODO
             switch(position) {
                 case COLOUR_ITEM:
                     return ColourPickerFragment.newInstance();

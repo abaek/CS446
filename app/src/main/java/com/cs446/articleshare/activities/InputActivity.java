@@ -1,4 +1,4 @@
-package com.cs446.articleshare;
+package com.cs446.articleshare.activities;
 
 import android.Manifest;
 import android.content.ClipboardManager;
@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,8 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cs446.articleshare.App;
+import com.cs446.articleshare.R;
 import com.cs446.articleshare.views.AspectRatioImageView;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
@@ -50,7 +53,6 @@ public class InputActivity extends AppCompatActivity {
     public static final String IMAGE = "com.cs446.articleshare.image";
 
     private GridView gv;
-    private GridViewAdapter gvAdapter;
     private TextView selectScreenshot;
     private TextView noScreenshot;
     private Button pasteButton;
@@ -76,7 +78,8 @@ public class InputActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Dexter.withActivity(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            Dexter.withActivity(this)
                 .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .withListener(new PermissionListener() {
                     @Override
@@ -91,6 +94,9 @@ public class InputActivity extends AppCompatActivity {
                     @Override
                     public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
                 }).check();
+        } else {
+            updateScreenshotGallery();
+        }
 
         if (clipboardEmpty(clipboard)) {
             disablePasteButton();
@@ -114,7 +120,7 @@ public class InputActivity extends AppCompatActivity {
     public void pasteClipboard(View view) {
         String pasteData = getTextFromClipboard(this, clipboard);
 
-        String excerpt = "";
+        String excerpt;
         if (pasteData != null) {
             excerpt = pasteData.trim();
         } else {
@@ -153,7 +159,7 @@ public class InputActivity extends AppCompatActivity {
     }
 
     private void updateScreenshotGallery() {
-        gvAdapter = new GridViewAdapter(this);
+        GridViewAdapter gvAdapter = new GridViewAdapter(this);
         gv.setAdapter(gvAdapter);
 
         if (gvAdapter.isEmpty()) {
@@ -173,9 +179,7 @@ public class InputActivity extends AppCompatActivity {
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 columns,
                 MediaStore.Images.Media.DATA + " like ? ",
-                // TODO: Use this for the screenshots only
-                // new String[]{"%/Screenshots/%"},
-                new String[]{"%"},
+                new String[]{"%/Screenshots/%"},
                 MediaStore.Images.Media.DATE_ADDED + " DESC"
         );
         if (cursor == null) {
@@ -198,7 +202,7 @@ public class InputActivity extends AppCompatActivity {
         private final Context context;
         List<String> urls;
 
-        public GridViewAdapter(Context context) {
+        GridViewAdapter(Context context) {
             this.context = context;
             urls = getCameraImages(context);
         }
@@ -215,8 +219,8 @@ public class InputActivity extends AppCompatActivity {
 
             Picasso.with(context)
                     .load(source)
-                    .placeholder(R.color.material_deep_teal_200)
-                    .error(R.color.material_blue_grey_800)
+                    .placeholder(R.color.md_teal_200)
+                    .error(R.color.md_blue_grey_800)
                     .fit()
                     .centerCrop()
                     .tag(context)
@@ -245,24 +249,16 @@ public class InputActivity extends AppCompatActivity {
         }
 
         private void openScreenshot(Uri source) {
+            if (source == null) {
+                // TODO show error
+                return;
+            }
             if (source.toString() == null || source.toString().isEmpty()) {
                 // TODO show error
                 return;
             }
 
-            if (source == null) {
-                // TODO show error
-                return;
-            }
-
             startCropper(source);
-        }
-
-        private void pushToShareActivity(Uri source) {
-            Intent intent = new Intent(context, ShareActivity.class);
-            // TODO: Push to CropActivity instead
-            intent.putExtra(IMAGE, source.toString());
-            startActivity(intent);
         }
 
         @Override
@@ -313,6 +309,7 @@ public class InputActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                // TODO handle error
                 Exception error = result.getError();
             }
         }

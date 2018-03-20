@@ -12,8 +12,7 @@ import android.widget.Toast;
 
 
 public class Util {
-    static final String EXCERPT = "com.cs446.articleshare.excerpt";
-    static final String IMAGEURI = "com.cs446.articleshare.imageurl";
+    static public final String EXCERPT = "com.cs446.articleshare.excerpt";
 
     // Clipboard util
 
@@ -45,7 +44,7 @@ public class Util {
         return text.toString();
     }
 
-    static boolean clipboardEmpty(ClipboardManager clipboard) {
+    static public boolean clipboardEmpty(ClipboardManager clipboard) {
         ClipData primaryClip = clipboard.getPrimaryClip();
         return primaryClip == null
                 || primaryClip.getItemAt(0) == null
@@ -55,7 +54,7 @@ public class Util {
 
     // Bitmap util
 
-    static Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {
+    static public Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {
         final int MAX_IMAGE_HEIGHT = 1920;
 
         int height = Math.min(MAX_IMAGE_HEIGHT, totalHeight);
@@ -80,5 +79,30 @@ public class Util {
         canvas.restore();
 
         return canvasBitmap;
+    }
+
+    // String util
+
+    static public String getPrettyUrl(String url) {
+        String prettyUrl = url;
+        if(prettyUrl.startsWith("https://www.")){
+            prettyUrl = prettyUrl.substring("https://www.".length());
+        }else if(prettyUrl.startsWith("http://www.")){
+            prettyUrl = prettyUrl.substring("http://www.".length());
+        }else if(prettyUrl.startsWith("https://")){
+            prettyUrl = prettyUrl.substring("https://".length());
+        }else if(prettyUrl.startsWith("http://")){
+            prettyUrl = prettyUrl.substring("http://".length());
+        }
+        return prettyUrl;
+    }
+
+    static public String getPrettyBaseUrl(String url) {
+        String prettyUrl = getPrettyUrl(url);
+        int backslashAt = prettyUrl.indexOf('/');
+        if(backslashAt > 0){
+            prettyUrl = prettyUrl.substring(0, backslashAt);
+        }
+        return prettyUrl;
     }
 }
