@@ -106,6 +106,6 @@ public class WebSearchAsyncTask extends AsyncTask<Void, Void, Void> {
     }
 
     public interface WebSearchAsyncTaskCallback {
-        void onComplete(Object o, Error error);
+        void onComplete(BingSearchResults results, Error error);
     }
 }

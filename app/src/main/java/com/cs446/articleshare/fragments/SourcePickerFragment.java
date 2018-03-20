@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.cs446.articleshare.R;
 import com.cs446.articleshare.Util;
-import com.cs446.articleshare.tasks.ParseHtmlAsyncTask;
+import com.cs446.articleshare.tasks.GetWebpageTitleAsyncTask;
 import com.cs446.articleshare.tasks.Value;
 import com.cs446.articleshare.tasks.WebPages;
 import com.google.gson.Gson;
@@ -81,11 +81,11 @@ public class SourcePickerFragment extends Fragment {
 
             for (int i = 0; i < webPages.getValue().size(); i++) {
                 final Value webPage = webPages.getValue().get(i);
-                ParseHtmlAsyncTask titleTask = new ParseHtmlAsyncTask(webPage.getUrl(),
-                    new ParseHtmlAsyncTask.Callback() {
+                GetWebpageTitleAsyncTask titleTask = new GetWebpageTitleAsyncTask(webPage.getUrl(),
+                    new GetWebpageTitleAsyncTask.Callback() {
                         @Override
-                        public void onComplete(Object o, Error error) {
-                            Source source = constructSource(o, error, webPage);
+                        public void onComplete(String title, Error error) {
+                            Source source = constructSource(title, error, webPage);
                             sources.add(source);
                             int buttonIndex = sources.size() - 1;
                             RadioButton rb = getRadioButton(source, buttonIndex);
@@ -112,10 +112,10 @@ public class SourcePickerFragment extends Fragment {
                 Toast.LENGTH_SHORT).show();
     }
 
-    private Source constructSource(Object o, Error error, Value webPage) {
+    private Source constructSource(String prettyTitle, Error error, Value webPage) {
         String title = webPage.getName();
-        if (error == null && ((String) o).length() > 0) {
-            title = (String) o;
+        if (error == null && prettyTitle.length() > 0) {
+            title = prettyTitle;
         }
         return new Source(title, Util.getPrettyBaseUrl(webPage.getDisplayUrl()), webPage.getUrl());
     }
@@ -183,17 +183,15 @@ public class SourcePickerFragment extends Fragment {
 
     private void useCustomUrl(final String url, final RadioGroup sourceSelect) {
         // check if text is URL
-        ParseHtmlAsyncTask titleTask =
-                new ParseHtmlAsyncTask(url, new ParseHtmlAsyncTask.Callback(){
+        GetWebpageTitleAsyncTask titleTask =
+                new GetWebpageTitleAsyncTask(url, new GetWebpageTitleAsyncTask.Callback(){
                     @Override
-                    public void onComplete(Object o, Error error) {
+                    public void onComplete(String title, Error error) {
                         if(error != null){
                             Toast.makeText(getActivity(), "The clipboard text is not a valid URL.",
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        String title = (String) o;
-
                         String baseUrl = Util.getPrettyBaseUrl(url);
 
                         Source customSource = new Source(title, baseUrl, url);

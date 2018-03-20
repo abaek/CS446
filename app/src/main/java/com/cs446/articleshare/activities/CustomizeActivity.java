@@ -161,14 +161,13 @@ public class CustomizeActivity
 
         WebSearchAsyncTask searchTask = new WebSearchAsyncTask(query, NUM_RESULTS, new WebSearchAsyncTask.WebSearchAsyncTaskCallback() {
             @Override
-            public void onComplete(Object o, Error error) {
+            public void onComplete(BingSearchResults results, Error error) {
                 SourcePickerFragment sourcePicker = pagerAdapter.getSourcePickerFragment();
                 if (sourcePicker == null) {
                     throw new RuntimeException("source picker fragment was null");
                 }
-                BingSearchResults webSearchResults = (BingSearchResults) o;
                 JsonObject resultsJson = new JsonParser()
-                        .parse(webSearchResults.getJson())
+                        .parse(results.getJson())
                         .getAsJsonObject();
                 sourcePicker.onSourceUpdated(resultsJson, error);
             }

@@ -10,7 +10,7 @@ import org.jsoup.select.Elements;
 /**
  * Gets the title of an article from a URL
  */
-public class ParseHtmlAsyncTask extends AsyncTask<Void, Void, Void> {
+public class GetWebpageTitleAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private String mUrl;
     private Callback mCallback;
@@ -18,7 +18,7 @@ public class ParseHtmlAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private String title;
 
-    public ParseHtmlAsyncTask(String url, Callback callback) {
+    public GetWebpageTitleAsyncTask(String url, Callback callback) {
         mUrl = url;
         if(!url.startsWith("http")){
             mUrl = "http://" + url;
@@ -65,6 +65,6 @@ public class ParseHtmlAsyncTask extends AsyncTask<Void, Void, Void> {
     }
 
     public interface Callback {
-        void onComplete(Object o, Error error);
+        void onComplete(String title, Error error);
     }
 }
